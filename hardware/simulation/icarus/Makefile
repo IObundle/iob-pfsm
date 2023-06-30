@@ -1,4 +1,4 @@
-FSM_DIR:=../../..
+PFSM_DIR:=../../..
 
 incdir:=-I
 defmacro:=-D

@@ -1,5 +1,5 @@
-FSM_DIR:=../../..
-include $(FSM_DIR)/hardware/hardware.mk
+PFSM_DIR:=../../..
+include $(PFSM_DIR)/hardware/hardware.mk
 
 FPGA_VSRC=$(addprefix ../, $(VSRC) )
 FPGA_VHDR=$(addprefix ../, $(VHDR) )
