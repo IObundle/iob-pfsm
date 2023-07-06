@@ -64,25 +64,25 @@ class iob_pfsm(iob_module):
                 {
                     "name": "INPUT_W",
                     "type": "P",
-                    "val": "NA",
+                    "val": "1",
                     "min": "NA",
-                    "max": "NA",
+                    "max": "4",
                     "descr": "Width of the input bus.",
                 },
                 {
                     "name": "OUTPUT_W",
                     "type": "P",
-                    "val": "NA",
+                    "val": "16",
                     "min": "NA",
-                    "max": "NA",
+                    "max": "32",
                     "descr": "Width of the ouput bus.",
                 },
                 {
-                    "name": "STATES_W",
+                    "name": "STATE_W",
                     "type": "P",
-                    "val": "NA",
+                    "val": "4",
                     "min": "NA",
-                    "max": "NA",
+                    "max": "10",
                     "descr": "Number of PFSM states (log2).",
                 },
             ]
@@ -144,7 +144,54 @@ class iob_pfsm(iob_module):
                 "descr": "Programmable FSM software accessible registers.",
                 "regs": [
                     {
-                        "name": "STATE_RESET",
+                        "name": "STATES_MEMORY",
+                        "type": "W",
+                        "n_bits": "DATA_W",
+                        "rst_val": 0,
+                        "addr": -1,
+                        "log2n_items": "STATE_W",
+                        "autologic": False,
+                        "descr": "Write word to the states programmable memory (used as LUT) for PFSM. If LUT word is greater than DATA_W, use STATE_MEM_WORD_SELECT to select which DATA_W word we are writing to the LUT memory.",
+                    },
+                    {
+                        "name": "CONDITION_MEMORY",
+                        "type": "W",
+                        "n_bits": "DATA_W",
+                        "rst_val": 0,
+                        "addr": -1,
+                        # A single range is composed of DATA_W states.
+                        # Each state uses 1 bit for the selected input_ports combination.
+                        # Number of ranges is: ceil((2^STATE_W)/data_w)
+                        # Number of items = $clog2( number_of_ranges )
+                        "log2n_items": "$clog2(((1<<STATE_W)+DATA_W-1)/DATA_W)",
+                        "autologic": False,
+                        "descr": "Write word to the condition programmable memory (used as LUT) for each state. The input_ports combination is selected via the CONDITION_COMB register. Each bit of this register corresponds to a condition for each a state in the DATA_W range of the address provided.",
+                    },
+                    {
+                        "name": "STATE_MEM_WORD_SELECT",
+                        "type": "W",
+                        # Number of `DATA_W` words in each state_mem word = Ceiling division of state_mem_word_w by data_w
+                        # Number of bits required to represent these words = $clog2( number_of_words )
+                        # Register must have at least 1 bit = `IOB_MAX( number_of_bits, 1 )
+                        "n_bits": "`IOB_MAX($clog2((STATE_W+OUTPUT_W+DATA_W-1)/DATA_W),1)",
+                        "rst_val": 0,
+                        "addr": -1,
+                        "log2n_items": 0,
+                        "autologic": True,
+                        "descr": "If the LUT memory word is greater than DATA_W, use this to select which DATA_W word we are writing to the address of the LUT memory.",
+                    },
+                    {
+                        "name": "CONDITION_COMB",
+                        "type": "W",
+                        "n_bits": "INPUT_W",
+                        "rst_val": 0,
+                        "addr": -1,
+                        "log2n_items": 0,
+                        "autologic": True,
+                        "descr": "Selecte the input_port combination to which we are writing the condition new condition (via CONDITION_MEMORY register).",
+                    },
+                    {
+                        "name": "SOFTRESET",
                         "type": "W",
                         "n_bits": 1,
                         "rst_val": 0,
@@ -152,16 +199,6 @@ class iob_pfsm(iob_module):
                         "log2n_items": 0,
                         "autologic": True,
                         "descr": "Reset PFSM to state 0.",
-                    },
-                    {
-                        "name": "MEMORY",
-                        "type": "W",
-                        "n_bits": 32,
-                        "rst_val": 0,
-                        "addr": -1,
-                        "log2n_items": "STATES_W+INPUT_W+clog((STATE_W+OUTPUT_W)/DATA_W)", # Memory size (State_W + Input_w) + bits to select data word in each memory address (clog((State_w + OUTPUT_W)/DATA_W))
-                        "autologic": False,
-                        "descr": 'Programmable memory (used as LUT) for PFSM.',
                     },
                 ],
             }
