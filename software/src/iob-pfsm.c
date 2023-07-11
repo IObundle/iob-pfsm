@@ -7,7 +7,7 @@ static uint32_t g_output_w;
 
 //PFSM functions
 
-//Set PFSM base address
+// Set PFSM base address
 void pfsm_init(int base_address, uint32_t state_w, uint8_t input_w, uint32_t output_w){
   IOB_PFSM_INIT_BASEADDR(base_address);
   g_state_w=state_w;
@@ -23,10 +23,15 @@ void pfsm_insert_word_lut(int addr, uint8_t word_select, uint32_t value){
   IOB_PFSM_SET_MEMORY(value, addr);
 }
 
-//pulse soft reset to go back to state 0
+// Pulse soft reset to go back to state 0
 void pfsm_reset(){
   IOB_PFSM_SET_SOFTRESET(1);
   IOB_PFSM_SET_SOFTRESET(0);
+}
+
+// Get current state of PFSM
+uint32_t pfsm_get_state(){
+  return IOB_PFSM_GET_CURRENT_STATE();
 }
 
 // Program PFSM given a bitstream with data to program the States LUT and every condition LUT.

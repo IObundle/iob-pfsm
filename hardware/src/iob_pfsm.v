@@ -37,6 +37,8 @@ module iob_pfsm # (
       .data_o(current_state)
     );
 
+    assign CURRENT_STATE = current_state;
+
     // Number of bytes in IOb-Native data bus
     localparam N_BYTES_DATA_WORD = `IOB_PFSM_CEIL_DIV(DATA_W,8);
     // Number of bytes in each LUT memory word

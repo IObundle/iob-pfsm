@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 
 from iob_module import iob_module
 from setup import setup
@@ -175,6 +174,16 @@ class iob_pfsm(iob_module):
                         "log2n_items": 0,
                         "autologic": True,
                         "descr": "Reset PFSM to state 0.",
+                    },
+                    {
+                        "name": "CURRENT_STATE",
+                        "type": "R",
+                        "n_bits": "STATE_W",
+                        "rst_val": 0,
+                        "addr": -1,
+                        "log2n_items": 0,
+                        "autologic": True,
+                        "descr": "Read current state of PFSM.",
                     },
                 ],
             }
