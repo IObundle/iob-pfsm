@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import shutil
 
 from iob_module import iob_module
 from setup import setup
@@ -34,6 +35,13 @@ class iob_pfsm(iob_module):
 
         # Copy sources of this module to the build directory
         super()._run_setup()
+
+        # Copy iob_fsm_program.py script to the build directory
+        os.makedirs(os.path.join(cls.build_dir, "scripts"), exist_ok=True)
+        shutil.copy(
+            os.path.join(cls.setup_dir, "scripts/iob_fsm_program.py"),
+            os.path.join(cls.build_dir, "scripts/"),
+        )
 
         # Setup core using LIB function
         setup(cls)
