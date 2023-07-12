@@ -4,7 +4,6 @@ import os
 import shutil
 
 from iob_module import iob_module
-from setup import setup
 
 # Submodules
 from iob_reg import iob_reg
@@ -18,23 +17,15 @@ class iob_pfsm(iob_module):
     setup_dir = os.path.dirname(__file__)
 
     @classmethod
-    def _run_setup(cls):
+    def _specific_setup(cls):
         # Hardware headers & modules
         iob_module.generate("iob_s_port")
         iob_module.generate("iob_s_portmap")
         iob_reg.setup()
         iob_reg_e.setup()
 
-        cls._setup_confs()
-        cls._setup_ios()
-        cls._setup_regs()
-        cls._setup_block_groups()
-
         # Verilog modules instances
         # TODO
-
-        # Copy sources of this module to the build directory
-        super()._run_setup()
 
         # Copy iob_fsm_program.py script to the build directory
         os.makedirs(os.path.join(cls.build_dir, "scripts"), exist_ok=True)
@@ -42,9 +33,6 @@ class iob_pfsm(iob_module):
             os.path.join(cls.setup_dir, "scripts/iob_fsm_program.py"),
             os.path.join(cls.build_dir, "scripts/"),
         )
-
-        # Setup core using LIB function
-        setup(cls)
 
     @classmethod
     def _setup_confs(cls):

@@ -44,7 +44,7 @@ class iob_soc_tester(iob_soc):
   ...
   # Method that runs the setup process of the Tester system
   @classmethod
-  def _run_setup(cls):
+  def _post_setup(cls):
     ...
     # Setup the PFSM module (Copies every file and dependency required to the build directory)
     iob_pfsm.setup()
