@@ -17,13 +17,18 @@ class iob_pfsm(iob_module):
     setup_dir = os.path.dirname(__file__)
 
     @classmethod
-    def _specific_setup(cls):
-        # Hardware headers & modules
-        iob_module.generate("iob_s_port")
-        iob_module.generate("iob_s_portmap")
-        iob_reg.setup()
-        iob_reg_e.setup()
+    def _create_submodules_list(cls):
+        ''' Create submodules list with dependencies of this module
+        '''
+        super()._create_submodules_list([
+            "iob_s_port",
+            "iob_s_portmap",
+            iob_reg,
+            iob_reg_e,
+        ])
 
+    @classmethod
+    def _specific_setup(cls):
         # Verilog modules instances
         # TODO
 
