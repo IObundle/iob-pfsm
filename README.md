@@ -27,7 +27,7 @@ The main class that describes this core is located in the `iob_pfsm.py` Python m
 The following steps describe the process of creating a PFSM peripheral in an IOb-SoC-based system:
 1) Import the `iob_pfsm` class
 2) Run the `iob_pfsm.setup()` method to copy the required sources of this module to the build directory.
-3) Run the `iob_pfsm.instance(...)` method to create a Verilog instance of the PFSM peripheral.
+3) Run the `iob_pfsm(...)` method to create a Verilog instance of the PFSM peripheral.
 To use this core as a peripheral of an IOb-SoC-based system:
   4) Add the created instance to the peripherals list of the IOb-SoC-based system.
   5) Write the firmware to run in the system, including the `iob-pfsm.h` C header and use its driver functions to control this core.
@@ -51,7 +51,7 @@ class iob_soc_tester(iob_soc):
     ...
     # Create a Verilog instance of this module, named 'PFSM0', and add it to the peripherals list of the system.
     cls.peripherals.append(
-        iob_pfsm.instance(
+        iob_pfsm(
             "PFSM0",
             "PFSM interface",
             parameters={"STATE_W": "2", "INPUT_W": "1", "OUTPUT_W": "1"},
