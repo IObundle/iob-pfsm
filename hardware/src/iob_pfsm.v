@@ -39,12 +39,25 @@ module iob_pfsm # (
   localparam N_BYTES_DATA_WORD = `IOB_PFSM_CEIL_DIV(DATA_W,8);
   // Number of bytes in each LUT memory word
   localparam LUT_DATA_W = STATE_W+OUTPUT_W;
-  // Number of bits to shift for word select
-  localparam WORD_SELECT_SHIFT = N_BYTES_DATA_WORD*MEM_WORD_SELECT;
+  // (Floor) Number of data_w words in LUT data bus
+  localparam N_DATA_WORDS = LUT_DATA_W/DATA_W;
 
   wire [LUT_DATA_W-1:0] lut_o;
+  wire [LUT_DATA_W-1:0] lut_i;
+
+  genvar i;
   // LUT data input signal. Composed of same bits as currently in LUT joined by new DATA_W bits.
-  wire [LUT_DATA_W-1:0] lut_data_input = lut_o[LUT_DATA_W-1:WORD_SELECT_SHIFT+DATA_W] | iob_wdata_i<<(WORD_SELECT_SHIFT) | lut_o[0+:WORD_SELECT_SHIFT];
+  generate
+     // Connect correct data word
+     for (i=0; i<N_DATA_WORDS; i++) begin
+        assign lut_i[i*DATA_W+:DATA_W] = MEMORY_wen && MEM_WORD_SELECT==i ? iob_wdata_i : lut_o[i*DATA_W+:DATA_W];
+     end
+     // Connect highest bits (assuming its not a full data word)
+     if (LUT_DATA_W%DATA_W!=0) begin
+        assign lut_i[LUT_DATA_W-1:N_DATA_WORDS*DATA_W] = MEMORY_wen && MEM_WORD_SELECT==N_DATA_WORDS ? iob_wdata_i : lut_o[LUT_DATA_W-1:N_DATA_WORDS*DATA_W];
+     end
+  endgenerate
+
   // LUT address. Either memory address corresponding to:
   //  1) curent_state, input_combination
   //  2) Selected memory address for writing
@@ -61,7 +74,7 @@ module iob_pfsm # (
     .rst_i(1'b0),
     .we_i(MEMORY_wen),
     .addr_i(lut_addr),
-    .d_i(lut_data_input),
+    .d_i(lut_i),
     .d_o(lut_o)
  );
 
