@@ -14,7 +14,7 @@ Its hardware mostly consists of a memory, used as a Lookup table (LUT), and a re
   style="display: inline-block; margin: 0 auto; max-width: 300px">
 
 This core provides drivers to load a bitstream at run time to reprogram the PFSM.
-It also provides the `scripts/iob_fsm_program.py` python module to generate bitstreams based on given state instructions.
+It also provides the `scripts/iob_pfsm_program.py` python module to generate bitstreams based on given state instructions.
 
 ## Integrate in SoC ##
 
@@ -61,19 +61,19 @@ class iob_soc_tester(iob_soc):
 
 ## Generate a bitstream ##
 
-To generate a bitstream to program this PFSM, you can use the `scripts/iob_fsm_program.py` python module.
+To generate a bitstream to program this PFSM, you can use the `scripts/iob_pfsm_program.py` python module.
 This scripts allows you to describe each state of PFSM machine and their behaviour.
 
 The following commented examples show how to use this module:
 ```Python
 # Import the classes from that python module
-from iob_fsm_program import iob_fsm_program, iob_fsm_record
+from iob_pfsm_program import iob_pfsm_program, iob_fsm_record
 
-# The `iob_fsm_program` object describes a program, including its states, for a specific PFSM.
+# The `iob_pfsm_program` object describes a program, including its states, for a specific PFSM.
 
-# Start by creating an `iob_fsm_program` object and initialize it with the same parameters as the PFSM used.
+# Start by creating an `iob_pfsm_program` object and initialize it with the same parameters as the PFSM used.
 # In this example, we use a PFSM with 2^2 states, 1 input and 1 output.
-fsm_prog = iob_fsm_program(2,1,1) # State_w = 2, Input_w = 1, Output_w = 1
+fsm_prog = iob_pfsm_program(2,1,1) # State_w = 2, Input_w = 1, Output_w = 1
 
 # Add a list of records to the program, each of them describing a state.
 fsm_prog.add_record([

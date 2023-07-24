@@ -32,10 +32,10 @@ class iob_pfsm(iob_module):
         # Verilog modules instances
         # TODO
 
-        # Copy iob_fsm_program.py script to the build directory
+        # Copy iob_pfsm_program.py script to the build directory
         os.makedirs(os.path.join(cls.build_dir, "scripts"), exist_ok=True)
         shutil.copy(
-            os.path.join(cls.setup_dir, "scripts/iob_fsm_program.py"),
+            os.path.join(cls.setup_dir, "scripts/iob_pfsm_program.py"),
             os.path.join(cls.build_dir, "scripts/"),
         )
 
