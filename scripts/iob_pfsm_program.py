@@ -26,9 +26,9 @@ class iob_fsm_record:
         self.output_expr = output_expr
 
 
-class iob_fsm_program:
+class iob_pfsm_program:
     """
-    The fsm_program defines the FSM and its states.
+    The pfsm_program defines the FSM and its states.
     It contains the list of the states and the list of the transitions.
     :param int state_w: number of bits for FSM states.
     :param int input_w: number of bits for FSM inputs.
