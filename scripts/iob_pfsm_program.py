@@ -82,7 +82,7 @@ class iob_pfsm_program:
                     data_bits = struct.pack(
                         ">I", (next_state_bits << self.output_w) | output_bits
                     )
-                    print(f'DEBUG: [{record}:{input_comb}] nxt:{next_state_bits} out:{output_bits} word:{data_bits}')  # DEBUG
+                    #print(f'DEBUG: [{record}:{input_comb}] nxt:{next_state_bits} out:{output_bits} word:{data_bits}')  # DEBUG
                     f.write(data_bits)
 
             # Generate any remaining recors if they exist.
