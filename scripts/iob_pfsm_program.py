@@ -135,11 +135,10 @@ class iob_pfsm_program:
                 f"{bin(input_comb)[2:]}: {self.__eval_expression(output_expr, input_comb)}"
             )
 
-    @staticmethod
-    def __eval_expression(expr: str, input_comb: int):
+    def __eval_expression(self, expr: str, input_comb: int):
         # Create bit list for inputs
         i = []
-        while input_comb > 0:
+        for _ in range(self.input_w):
             bit = input_comb & 1  # Extract the least significant bit
             i.insert(0, bit)  # Add the bit to the beginning of the list
             input_comb >>= 1  # Right shift the value by 1 bit
