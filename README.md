@@ -28,11 +28,12 @@ The following steps describe the process of creating a PFSM peripheral in an IOb
 1) Import the `iob_pfsm` class
 2) Add the `iob_pfsm` class to the submodules list. This will copy the required sources of this module to the build directory.
 3) Run the `iob_pfsm(...)` constructor to create a Verilog instance of the PFSM peripheral.
-To use this core as a peripheral of an IOb-SoC-based system:
-  4) Add the created instance to the peripherals list of the IOb-SoC-based system.
-  5) Write the firmware to run in the system, including the `iob-pfsm.h` C header, and use its driver functions to control this core.
-6) Create a bitstream to program the PFSM at run-time. Instructions in [generate a bitstream](#generate-a-bitstream) section.
-7) Load the bitstream into the PFSM and reprogram it using the `pfsm_bitstream_program` driver function.
+4) To use this core as a peripheral of an IOb-SoC-based system:
+  1) Add the created instance to the peripherals list of the IOb-SoC-based system.
+  2) Use the `_setup_portmap()` method of IOb-SoC to map IOs of the PFSM peripheral.
+  3) Write the firmware to run in the system, including the `iob-pfsm.h` C header, and use its driver functions to control this core.
+5) Create a bitstream to program the PFSM at run-time. Instructions in [generate a bitstream](#generate-a-bitstream) section.
+6) Load the bitstream into the PFSM and reprogram it using the `pfsm_bitstream_program` driver function.
 
 ## Example configuration
 
@@ -65,6 +66,43 @@ class iob_soc_tester(iob_soc):
             parameters={"STATE_W": "2", "INPUT_W": "1", "OUTPUT_W": "1"},
         )
     )
+  ...
+  # Tester system method to map IOs of peripherals
+  @classmethod
+  def _setup_portmap(cls):
+      super()._setup_portmap()
+      cls.peripheral_portmap += [
+          ...
+          # PFSM IO --- Connect IOs of Programmable Finite State Machine to internal system signals
+          (
+              {
+                  "corename": "PFSM0",
+                  "if_name": "pfsm",
+                  "port": "input_ports",
+                  "bits": [],
+              },
+              {
+                  "corename": "internal",
+                  "if_name": "PFSM0",
+                  "port": "",
+                  "bits": [],
+              },
+          ),
+          (
+              {
+                  "corename": "PFSM0",
+                  "if_name": "pfsm",
+                  "port": "output_ports",
+                  "bits": [],
+              },
+              {
+                  "corename": "internal",
+                  "if_name": "PFSM0",
+                  "port": "",
+                  "bits": [],
+              },
+          ),
+      ]
 ```
 
 ## Generate a bitstream ##
