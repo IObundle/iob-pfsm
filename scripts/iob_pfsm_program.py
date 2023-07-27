@@ -26,9 +26,9 @@ class iob_fsm_record:
         self.output_expr = output_expr
 
 
-class iob_fsm_program:
+class iob_pfsm_program:
     """
-    The fsm_program defines the FSM and its states.
+    The pfsm_program defines the FSM and its states.
     It contains the list of the states and the list of the transitions.
     :param int state_w: number of bits for FSM states.
     :param int input_w: number of bits for FSM inputs.
@@ -37,10 +37,10 @@ class iob_fsm_program:
     """
 
     def __init__(self, state_w: int, input_w: int, output_w: int, data_w=32):
-        self.state_w = state_w
-        self.input_w = input_w
-        self.output_w = output_w
-        self.data_w = data_w
+        self.state_w = int(state_w)
+        self.input_w = int(input_w)
+        self.output_w = int(output_w)
+        self.data_w = int(data_w)
 
         self.records = []
 
@@ -78,13 +78,22 @@ class iob_fsm_program:
                 for input_comb in range(2**self.input_w):
                     next_state_bits = self.__get_next_state_bits(record, input_comb)
                     output_bits = self.__get_output_bits(record, input_comb)
-                    # Pack bytes in big endian order
+                    # Pack 4 bytes in big endian order. TODO: Will need to find a way to pack values greater than 32 bits.
                     data_bits = struct.pack(
-                        ">I", (next_state_bits << self.output_w) & output_bits
+                        ">I", (next_state_bits << self.output_w) | output_bits
                     )
+                    #print(f'DEBUG: [{record}:{input_comb}] nxt:{next_state_bits} out:{output_bits} word:{data_bits}')  # DEBUG
                     f.write(data_bits)
 
-            # No need to generate the rest `(2**self.state_w)-len(records)` states, since they are unused.
+            # Generate any remaining recors if they exist.
+            for record in range((2**self.state_w)-len(self.records)):
+                # Iterate through every input combination
+                for input_comb in range(2**self.input_w):
+                    # Pack 4 bytes with value 0
+                    data_bits = struct.pack(
+                        ">I", 0
+                    )
+                    f.write(data_bits)
 
     def __get_output_bits(self, record: int, input_comb: int):
         """Generate the output bits based on the current record and the input combination.
@@ -126,16 +135,15 @@ class iob_fsm_program:
                 f"{bin(input_comb)[2:]}: {self.__eval_expression(output_expr, input_comb)}"
             )
 
-    @staticmethod
-    def __eval_expression(expr: str, input_comb: int):
+    def __eval_expression(self, expr: str, input_comb: int):
         # Create bit list for inputs
         i = []
-        while input_comb > 0:
+        for _ in range(self.input_w):
             bit = input_comb & 1  # Extract the least significant bit
             i.insert(0, bit)  # Add the bit to the beginning of the list
             input_comb >>= 1  # Right shift the value by 1 bit
 
-        eval("return " + expr)
+        return eval(expr)
 
     def __get_next_state_bits(self, record: int, input_comb: int):
         """Generate the next state bits based on current record and the input combination.
