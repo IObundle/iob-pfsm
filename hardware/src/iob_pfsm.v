@@ -1,6 +1,5 @@
 `timescale 1ns/1ps
 
-`include "iob_lib.vh"
 `include "iob_pfsm_conf.vh"
 `include "iob_pfsm_swreg_def.vh"
 
