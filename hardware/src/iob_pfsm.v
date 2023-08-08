@@ -1,6 +1,5 @@
 `timescale 1ns/1ps
 
-`include "iob_lib.vh"
 `include "iob_pfsm_conf.vh"
 `include "iob_pfsm_swreg_def.vh"
 
@@ -81,5 +80,8 @@ module iob_pfsm # (
  // Extract bits from word of `lut_o`
  assign output_ports = lut_o[0+:OUTPUT_W]; // Least significant bits connected to output
  assign next_state = lut_o[OUTPUT_W+:STATE_W]; // Followed by next_state bits
+
+ // Set MEMORY register as ready
+ assign MEMORY_ready = 1'b1;
 
 endmodule
