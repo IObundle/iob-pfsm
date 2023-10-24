@@ -27,12 +27,12 @@ module iob_pfsm # (
     .clk_i(clk_i),
     .cke_i(cke_i),
     .arst_i(arst_i),
-    .rst_i(SOFTRESET),
+    .rst_i(SOFTRESET_w),
     .data_i(next_state),
     .data_o(current_state)
   );
 
-  assign CURRENT_STATE = current_state;
+  assign CURRENT_STATE_r = current_state;
 
   // Number of bytes in IOb-Native data bus
   localparam N_BYTES_DATA_WORD = `IOB_PFSM_CEIL_DIV(DATA_W,8);
@@ -49,11 +49,11 @@ module iob_pfsm # (
   generate
      // Connect correct data word
      for (i=0; i<N_DATA_WORDS; i++) begin
-        assign lut_i[i*DATA_W+:DATA_W] = MEMORY_wen && MEM_WORD_SELECT==i ? iob_wdata_i : lut_o[i*DATA_W+:DATA_W];
+        assign lut_i[i*DATA_W+:DATA_W] = MEMORY_wen && MEM_WORD_SELECT_w==i ? iob_wdata_i : lut_o[i*DATA_W+:DATA_W];
      end
      // Connect highest bits (assuming its not a full data word)
      if (LUT_DATA_W%DATA_W!=0) begin
-        assign lut_i[LUT_DATA_W-1:N_DATA_WORDS*DATA_W] = MEMORY_wen && MEM_WORD_SELECT==N_DATA_WORDS ? iob_wdata_i : lut_o[LUT_DATA_W-1:N_DATA_WORDS*DATA_W];
+        assign lut_i[LUT_DATA_W-1:N_DATA_WORDS*DATA_W] = MEMORY_wen && MEM_WORD_SELECT_w==N_DATA_WORDS ? iob_wdata_i : lut_o[LUT_DATA_W-1:N_DATA_WORDS*DATA_W];
      end
   endgenerate
 
