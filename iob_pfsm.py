@@ -150,7 +150,7 @@ class iob_pfsm(iob_module):
                         "rst_val": 0,
                         "addr": -1,
                         "log2n_items": "INPUT_W+STATE_W",
-                        "autologic": False,
+                        "autoreg": False,
                         "descr": "Write word to the PFSM programmable memory (used as LUT). If LUT word is greater than DATA_W, use MEM_WORD_SELECT to select which DATA_W word we are writing to the LUT memory.",
                     },
                     {
@@ -163,7 +163,7 @@ class iob_pfsm(iob_module):
                         "rst_val": 0,
                         "addr": -1,
                         "log2n_items": 0,
-                        "autologic": True,
+                        "autoreg": True,
                         "descr": "If the LUT memory word is greater than DATA_W, use this to select which DATA_W word we are writing to the address of the LUT memory.",
                     },
                     {
@@ -173,7 +173,7 @@ class iob_pfsm(iob_module):
                         "rst_val": 0,
                         "addr": -1,
                         "log2n_items": 0,
-                        "autologic": True,
+                        "autoreg": True,
                         "descr": "Reset PFSM to state 0.",
                     },
                     {
@@ -183,7 +183,7 @@ class iob_pfsm(iob_module):
                         "rst_val": 0,
                         "addr": -1,
                         "log2n_items": 0,
-                        "autologic": True,
+                        "autoreg": True,
                         "descr": "Read current state of PFSM.",
                     },
                 ],
