@@ -11,9 +11,19 @@ module iob_pfsm # (
    `include "iob_pfsm_io.vs"
   );
 
+   `include "iob_wire.vs"
+
+   assign iob_avalid = iob_avalid_i;
+   assign iob_addr = iob_addr_i;
+   assign iob_wdata = iob_wdata_i;
+   assign iob_wstrb = iob_wstrb_i;
+   assign iob_rvalid_o = iob_rvalid;
+   assign iob_rdata_o = iob_rdata;
+   assign iob_ready_o = iob_ready;
+
    //Dummy iob_ready_nxt_o and iob_rvalid_nxt_o to be used in swreg (unused ports)
-   wire iob_ready_nxt_o;
-   wire iob_rvalid_nxt_o;
+   wire iob_ready_nxt;
+   wire iob_rvalid_nxt;
 
   //BLOCK Register File & Configuration control and status register file.
   `include "iob_pfsm_swreg_inst.vs"
@@ -27,12 +37,12 @@ module iob_pfsm # (
     .clk_i(clk_i),
     .cke_i(cke_i),
     .arst_i(arst_i),
-    .rst_i(SOFTRESET),
+    .rst_i(SOFTRESET_wr),
     .data_i(next_state),
     .data_o(current_state)
   );
 
-  assign CURRENT_STATE = current_state;
+  assign CURRENT_STATE_rd = current_state;
 
   // Number of bytes in IOb-Native data bus
   localparam N_BYTES_DATA_WORD = `IOB_PFSM_CEIL_DIV(DATA_W,8);
@@ -49,18 +59,18 @@ module iob_pfsm # (
   generate
      // Connect correct data word
      for (i=0; i<N_DATA_WORDS; i++) begin
-        assign lut_i[i*DATA_W+:DATA_W] = MEMORY_wen && MEM_WORD_SELECT==i ? iob_wdata_i : lut_o[i*DATA_W+:DATA_W];
+        assign lut_i[i*DATA_W+:DATA_W] = MEMORY_wen_wr && MEM_WORD_SELECT_wr==i ? iob_wdata_i : lut_o[i*DATA_W+:DATA_W];
      end
      // Connect highest bits (assuming its not a full data word)
      if (LUT_DATA_W%DATA_W!=0) begin
-        assign lut_i[LUT_DATA_W-1:N_DATA_WORDS*DATA_W] = MEMORY_wen && MEM_WORD_SELECT==N_DATA_WORDS ? iob_wdata_i : lut_o[LUT_DATA_W-1:N_DATA_WORDS*DATA_W];
+        assign lut_i[LUT_DATA_W-1:N_DATA_WORDS*DATA_W] = MEMORY_wen_wr && MEM_WORD_SELECT_wr==N_DATA_WORDS ? iob_wdata_i : lut_o[LUT_DATA_W-1:N_DATA_WORDS*DATA_W];
      end
   endgenerate
 
   // LUT address. Either memory address corresponding to:
   //  1) curent_state, input_combination
   //  2) Selected memory address for writing
-  wire [INPUT_W+STATE_W-1:0] lut_addr = MEMORY_wen ? (iob_addr_i-`IOB_PFSM_MEMORY_ADDR)>>$clog2(N_BYTES_DATA_WORD) : {current_state,input_ports};
+  wire [INPUT_W+STATE_W-1:0] lut_addr = MEMORY_wen_wr ? (iob_addr_i-`IOB_PFSM_MEMORY_ADDR)>>$clog2(N_BYTES_DATA_WORD) : {current_state,input_ports};
 
  // Memory used as LUT for PFSM states
  iob_regfile_sp #(
@@ -71,7 +81,7 @@ module iob_pfsm # (
     .cke_i(cke_i),
     .arst_i(arst_i),
     .rst_i(1'b0),
-    .we_i(MEMORY_wen),
+    .we_i(MEMORY_wen_wr),
     .addr_i(lut_addr),
     .d_i(lut_i),
     .d_o(lut_o)
@@ -82,6 +92,6 @@ module iob_pfsm # (
  assign next_state = lut_o[OUTPUT_W+:STATE_W]; // Followed by next_state bits
 
  // Set MEMORY register as ready
- assign MEMORY_ready = 1'b1;
+ assign MEMORY_wready_wr = 1'b1;
 
 endmodule

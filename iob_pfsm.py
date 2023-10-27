@@ -148,9 +148,8 @@ class iob_pfsm(iob_module):
                         "type": "W",
                         "n_bits": "DATA_W",
                         "rst_val": 0,
-                        "addr": -1,
                         "log2n_items": "INPUT_W+STATE_W",
-                        "autologic": False,
+                        "autoreg": False,
                         "descr": "Write word to the PFSM programmable memory (used as LUT). If LUT word is greater than DATA_W, use MEM_WORD_SELECT to select which DATA_W word we are writing to the LUT memory.",
                     },
                     {
@@ -161,9 +160,8 @@ class iob_pfsm(iob_module):
                         # Register must have at least 1 bit = `IOB_MAX( number_of_bits, 1 )
                         "n_bits": "`IOB_MAX($clog2((STATE_W+OUTPUT_W+DATA_W-1)/DATA_W),1)",
                         "rst_val": 0,
-                        "addr": -1,
                         "log2n_items": 0,
-                        "autologic": True,
+                        "autoreg": True,
                         "descr": "If the LUT memory word is greater than DATA_W, use this to select which DATA_W word we are writing to the address of the LUT memory.",
                     },
                     {
@@ -171,9 +169,8 @@ class iob_pfsm(iob_module):
                         "type": "W",
                         "n_bits": 1,
                         "rst_val": 0,
-                        "addr": -1,
                         "log2n_items": 0,
-                        "autologic": True,
+                        "autoreg": True,
                         "descr": "Reset PFSM to state 0.",
                     },
                     {
@@ -181,9 +178,8 @@ class iob_pfsm(iob_module):
                         "type": "R",
                         "n_bits": "STATE_W",
                         "rst_val": 0,
-                        "addr": -1,
                         "log2n_items": 0,
-                        "autologic": True,
+                        "autoreg": True,
                         "descr": "Read current state of PFSM.",
                     },
                 ],
