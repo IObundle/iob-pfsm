@@ -58,11 +58,11 @@ module iob_pfsm # (
   // LUT data input signal. Composed of same bits as currently in LUT joined by new DATA_W bits.
   generate
      // Connect correct data word
-     for (i=0; i<N_DATA_WORDS; i++) begin
+     for (i=0; i<N_DATA_WORDS; i++) begin: gen_lut_i
         assign lut_i[i*DATA_W+:DATA_W] = MEMORY_wen_wr && MEM_WORD_SELECT_wr==i ? iob_wdata_i : lut_o[i*DATA_W+:DATA_W];
      end
      // Connect highest bits (assuming its not a full data word)
-     if (LUT_DATA_W%DATA_W!=0) begin
+     if (LUT_DATA_W%DATA_W!=0) begin: gen_lut_hi
         assign lut_i[LUT_DATA_W-1:N_DATA_WORDS*DATA_W] = MEMORY_wen_wr && MEM_WORD_SELECT_wr==N_DATA_WORDS ? iob_wdata_i : lut_o[LUT_DATA_W-1:N_DATA_WORDS*DATA_W];
      end
   endgenerate
