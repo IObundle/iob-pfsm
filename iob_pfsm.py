@@ -8,6 +8,7 @@ from iob_module import iob_module
 # Submodules
 from iob_reg import iob_reg
 from iob_reg_e import iob_reg_e
+from iob_regfile_sp import iob_regfile_sp
 
 
 class iob_pfsm(iob_module):
@@ -25,6 +26,7 @@ class iob_pfsm(iob_module):
             {"interface": "iob_s_portmap"},
             iob_reg,
             iob_reg_e,
+            iob_regfile_sp,
         ])
 
     @classmethod
