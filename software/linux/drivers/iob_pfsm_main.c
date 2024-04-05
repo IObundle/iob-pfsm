@@ -197,8 +197,8 @@ static int __init iob_pfsm_init(void) {
 
   // Create device class // todo: make a dummy driver just to create and own the
   // class: https://stackoverflow.com/a/16365027/8228163
-  if ((pfsm_driver.class =
-           class_create(THIS_MODULE, IOB_PFSM_DRIVER_CLASS)) == NULL) {
+  if ((pfsm_driver.class = class_create(THIS_MODULE, IOB_PFSM_DRIVER_CLASS)) ==
+      NULL) {
     printk("Device class can not be created!\n");
     goto r_alloc_region;
   }
@@ -277,13 +277,14 @@ static ssize_t iob_pfsm_read(struct file *file, char __user *buf, size_t count,
         iob_data_read_reg(iob_pfsm_data->regbase, IOB_PFSM_CURRENT_STATE_ADDR,
                           IOB_PFSM_CURRENT_STATE_W);
     size = (IOB_PFSM_CURRENT_STATE_W >> 3); // bit to bytes
-    pr_info("[Driver] Read CURRENT_STATE!\n");
+    pr_info("[Driver] %s: Read CURRENT_STATE: 0x%x\n", IOB_PFSM_DRIVER_NAME,
+            value);
     break;
   case IOB_PFSM_VERSION_ADDR:
     value = iob_data_read_reg(iob_pfsm_data->regbase, IOB_PFSM_VERSION_ADDR,
                               IOB_PFSM_VERSION_W);
     size = (IOB_PFSM_VERSION_W >> 3); // bit to bytes
-    pr_info("[Driver] Read version!\n");
+    pr_info("[Driver] %s: Read version 0x%x\n", IOB_PFSM_DRIVER_NAME, value);
     break;
   default:
     // invalid address - no bytes read
@@ -314,7 +315,8 @@ static ssize_t iob_pfsm_write(struct file *file, const char __user *buf,
     iob_data_write_reg(iob_pfsm_data->regbase, value,
                        IOB_PFSM_MEM_WORD_SELECT_ADDR,
                        IOB_PFSM_MEM_WORD_SELECT_W);
-    pr_info("[Driver] MEM_WORD_SELECT iob_pfsm: 0x%x\n", value);
+    pr_info("[Driver] %s: MEM_WORD_SELECT iob_pfsm: 0x%x\n",
+            IOB_PFSM_DRIVER_NAME, value);
     break;
   case IOB_PFSM_SOFTRESET_ADDR:
     size = (IOB_PFSM_SOFTRESET_W >> 3); // bit to bytes
@@ -322,7 +324,8 @@ static ssize_t iob_pfsm_write(struct file *file, const char __user *buf,
       return -EFAULT;
     iob_data_write_reg(iob_pfsm_data->regbase, value, IOB_PFSM_SOFTRESET_ADDR,
                        IOB_PFSM_SOFTRESET_W);
-    pr_info("[Driver] SOFTRESET iob_pfsm: 0x%x\n", value);
+    pr_info("[Driver] %s: SOFTRESET iob_pfsm: 0x%x\n", IOB_PFSM_DRIVER_NAME,
+            value);
     break;
   default:
     // MEMORY address range
@@ -333,10 +336,11 @@ static ssize_t iob_pfsm_write(struct file *file, const char __user *buf,
         return -EFAULT;
       iob_data_write_reg(iob_pfsm_data->regbase, value, (*ppos),
                          IOB_PFSM_MEMORY_W);
-      pr_info("[Driver] MEMORY[%x] iob_pfsm: 0x%x\n", value,
-              (unsigned int)((*ppos) - IOB_PFSM_MEMORY_ADDR));
+      pr_info("[Driver] %s: MEMORY[%x] iob_pfsm: 0x%x\n", IOB_PFSM_DRIVER_NAME,
+              (unsigned int)((*ppos) - IOB_PFSM_MEMORY_ADDR), value);
     } else {
-      pr_info("[Driver] Invalid write address 0x%x\n", (unsigned int)*ppos);
+      pr_info("[Driver] %s: Invalid write address 0x%x\n", IOB_PFSM_DRIVER_NAME,
+              (unsigned int)*ppos);
       return 0;
     }
     // invalid address - no bytes written
