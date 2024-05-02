@@ -82,17 +82,15 @@ class iob_pfsm_program:
                     data_bits = struct.pack(
                         ">I", (next_state_bits << self.output_w) | output_bits
                     )
-                    #print(f'DEBUG: [{record}:{input_comb}] nxt:{next_state_bits} out:{output_bits} word:{data_bits}')  # DEBUG
+                    # print(f'DEBUG: [{record}:{input_comb}] nxt:{next_state_bits} out:{output_bits} word:{data_bits}')  # DEBUG
                     f.write(data_bits)
 
             # Generate any remaining recors if they exist.
-            for record in range((2**self.state_w)-len(self.records)):
+            for record in range((2**self.state_w) - len(self.records)):
                 # Iterate through every input combination
                 for input_comb in range(2**self.input_w):
                     # Pack 4 bytes with value 0
-                    data_bits = struct.pack(
-                        ">I", 0
-                    )
+                    data_bits = struct.pack(">I", 0)
                     f.write(data_bits)
 
     def __get_output_bits(self, record: int, input_comb: int):
@@ -140,7 +138,7 @@ class iob_pfsm_program:
         i = []
         for _ in range(self.input_w):
             bit = input_comb & 1  # Extract the least significant bit
-            i.insert(0, bit)  # Add the bit to the beginning of the list
+            i.append(bit)  # Add the bit to the end of the list
             input_comb >>= 1  # Right shift the value by 1 bit
 
         return eval(expr)
